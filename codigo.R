@@ -7,7 +7,7 @@ col_names = FALSE)
 
 # renombrar columnas
 
-names(epa_http) <- c("ORIGEN","FECHA","TIPO","RUTA","PROTOCOLO","PETICIONES","BYTES")
+names(epa_http) <- c("ORIGEN","FECHA","TIPO","URL","PROTOCOLO","PETICIONES","BYTES")
 
 # Pregunta 1:
 
@@ -72,4 +72,29 @@ hora_max_peticiones <- names(frecuencia_horas)[which.max(frecuencia_horas)]
 # Mostrar la hora con mayor volumen de peticiones "GET"
 print(paste("La hora con mayor volumen de peticiones GET es:", hora_max_peticiones,":00 horas"))
 
+
+
+
+
+# Pregunta 4:
+# De las peticiones hechas por instituciones educativas (.edu), ¿Cuantos bytes en total se han transmitido, en peticiones de descarga de ficheros de texto ".txt"?
+
+grep(".edu", epa_http$ORIGEN) 
+
+aa <- dplyr::filter(epa_http,  grepl(".edu", ORIGEN, ignore.case = TRUE), grepl(".txt",URL, ignore.case = TRUE)) 
+aa$BYTES <- as.numeric(aa$BYTES)
+
+cantidad_bytes_txt <- sum(as.numeric(aa$BYTES),na.rm = TRUE)
+
+print(paste("Total de bytes transmitidos en ficheros de texto:", cantidad_bytes_txt))
+
+
+
+
+# Pregunta 5:
+# Si separamos la petición en 3 partes (Tipo, URL, Protocolo), usando str_split y el separador " " (espacio), ¿cuantas peticiones buscan directamente la URL = "/"?
+
+peticion_p5 <- dplyr::filter(epa_http, grepl("^/$", URL, ignore.case = TRUE)) 
+num_columnas <- dimensiones[2]
+peticion_p5 <- strsplit(peticion_p5$TIPO," ",peticion_p5$URL," ",peticion_p5$PROTOCOLO)
 
