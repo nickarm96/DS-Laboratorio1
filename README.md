@@ -1,2 +1,3 @@
 # DS-Laboratorio1
-Repositorio para laboratorio de la asignatura Data Science
+
+Repositorio para la entrega del laboratorio de la asignatura Data Science
