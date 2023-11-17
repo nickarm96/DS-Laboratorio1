@@ -24,8 +24,6 @@ cat("El dataset tiene", num_filas, "filas y", num_columnas, "columnas.\n")
 
 # 2. Valor medio de la columna Bytes
 
-datos <- epa_http 
-
 epa_http$bytes_sent <- as.numeric(epa_http$BYTES) 
 
 unique(epa_http$BYTES) 
