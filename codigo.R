@@ -95,6 +95,16 @@ print(paste("Total de bytes transmitidos en ficheros de texto:", cantidad_bytes_
 # Si separamos la petición en 3 partes (Tipo, URL, Protocolo), usando str_split y el separador " " (espacio), ¿cuantas peticiones buscan directamente la URL = "/"?
 
 peticion_p5 <- dplyr::filter(epa_http, grepl("^/$", URL, ignore.case = TRUE)) 
-num_columnas <- dimensiones[2]
-peticion_p5 <- strsplit(peticion_p5$TIPO," ",peticion_p5$URL," ",peticion_p5$PROTOCOLO)
 
+cantidad_peticiones_p5 <- nrow(peticion_p5)
+
+
+
+# Pregunta 6:
+# Aprovechando que hemos separado la petición en 3 partes (Tipo, URL, Protocolo) ¿Cuantas peticiones NO tienen como protocolo "HTTP/0.2"
+
+epa_http$PROTOCOLO <- gsub('"', "", epa_http$PROTOCOLO)
+
+peticion_p6 <- dplyr::filter(epa_http[!grepl("HTTP/0.2", epa_http$PROTOCOLO), ])
+  
+cantidad_peticiones_p6 <- nrow(peticion_p6)
