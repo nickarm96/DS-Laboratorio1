@@ -51,28 +51,28 @@ epa_http <- tidyr::unite(epa_http, "HORA", H, M, S, sep = ":")
 epa_http$HORA <- as.POSIXct(epa_http$HORA, tz = "", format = "%H:%M:%S")
 
 
-horas <- table(datos$DIA,datos$HORA)
-hora_max <- names(horas)[horas == max(horas)]
 
-
+# Agrupar peticiones "GET"
 epa_http$TIPO <- gsub("\"", "", epa_http$TIPO)
 peticiones_GET <- epa_http %>%
   filter(TIPO == "GET")
 
 
-# Extraer la hora de las peticiones "GET"
-horas_GET <- hour(peticiones_GET$HORA)
+HORA <- dplyr::select(peticiones_GET, HORA) %>% mutate(day(HORA), hour(HORA))
 
-# Contar las ocurrencias de cada hora
-frecuencia_horas <- table(horas_GET)
+colnames(HORA) <- c('tiempo', 'dia', 'hora')
+
+HORA_P3 <- HORA %>% group_by(hora) %>% mutate(hora) %>% summarise(n = n())
+
+HORA_P3 <- HORA %>% group_by(dia, hora) %>% mutate(dia, hora) %>% summarise(n = n())
 
 # Encontrar la hora con mayor volumen de peticiones "GET"
-hora_max_peticiones <- names(frecuencia_horas)[which.max(frecuencia_horas)]
 
-# Mostrar la hora con mayor volumen de peticiones "GET"
-print(paste("La hora con mayor volumen de peticiones GET es:", hora_max_peticiones,":00 horas"))
+select(HORA_P3$hora max(HORA_P3$n)
+       
+hora_maxima <- HORA_P3[HORA_P3$n == max(HORA_P3$n), "hora"]
 
-
+hora_maxima
 
 
 
