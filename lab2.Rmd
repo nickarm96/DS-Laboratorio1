@@ -1,0 +1,119 @@
+```{r load_packages, echo = FALSE}
+
+# install.packages("tidyr")
+# install.packages("dplyr")
+# install.packages("XML")
+# install.packages("httr")
+# install.packages("rvest")
+
+# load libraries
+library(tidyr)
+library(dplyr)
+library(XML)
+library(httr)
+library(rvest)
+library(knitr)
+```
+---
+title: "Laboratorio 2"
+author: "Grupo 5"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Pregunta 1.1
+
+Descargar la página web <https://www.mediawiki.org/wiki/MediaWiki> y almacenarla en un formato de R apto para ser tratado.
+
+```{r parsedHtml}
+url_base <- "https://www.mediawiki.org/wiki/MediaWiki"
+
+# version librerias httr y XML
+html <- GET(url_base)
+content <- content(html, as = "text")
+parsedHtml <- htmlParse(content, asText = TRUE)
+
+# version usando la libreria rvest:
+content_rvest <- read_html(url_base)
+```
+
+## Pregunta 1.2
+
+Analizar el contenido de la web, buscando el título de la página (que en HTML se etiqueta como “title”).
+
+```{r title, echo = FALSE}
+# version librerias httr y XML
+xpath_titulo <- "//title"
+title <- xpathSApply(parsedHtml, xpath_titulo, xmlValue)
+print(title)
+
+# version rvest
+titulo <- content_rvest %>% html_element(xpath = xpath_titulo) %>% html_text2()
+```
+
+## Pregunta 1.3
+
+Analizar el contenido de la web, buscando todos los enlaces (que en HTML se etiquetan como “a”), buscando el texto del enlace, así como la URL.
+
+```{r df, echo = FALSE}
+# links_url <- xpathSApply(parsedHtml, "//a", xmlGetAttr, 'href')
+# links_text <- xpathSApply(parsedHtml, "//a", xmlValue)
+# 
+# links_url[links_url == " "] <- "NA_character_"
+# links_url[links_url == ""] <- "NA_character_"
+# any(is.na(links_url))
+# 
+# ll = unlist(links_url)
+
+# table_enlace_texto <- data.frame(Enlace = links_url, Texto = links_text)
+#1+2
+# print(table_enlace_texto)
+
+# version librerias rvest
+enlaces <- content_rvest %>% html_elements(xpath = "//a")
+
+url_enlaces <- enlaces %>% html_attr("href")
+texto_enlaces <- enlaces %>% html_text2()
+
+df <- data.frame(
+  enlaces = url_enlaces,
+  texto = texto_enlaces,
+  stringsAsFactors = F
+)
+kable(df, format = "html")
+```
+
+## Pregunta 1.4
+
+Generar una tabla con cada enlace encontrado, indicando el texto que acompaña el enlace, y el número de veces que aparece un enlace con ese mismo objetivo.
+
+```{r tabla_suma_repeticiones, echo = FALSE}
+links_text <- xpathSApply(parsedHtml, "//a", xmlValue)
+#table_links <- data.frame(Enlace = links_text_table)
+contar_links <- table(links_text)
+
+tabla_suma_repeticiones <- data.frame(Registros = names(contar_links), Suma_Repeticiones = as.vector(contar_links))
+
+kable(tabla_suma_repeticiones, format = "html")
+```
+
+
+## Pregunta 1.5
+
+Para cada enlace, seguirlo e indicar si está activo (podemos usar el código de status HTTP al hacer una petición a esa URL)
+
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE, cache=TRUE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
